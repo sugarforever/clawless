@@ -47,36 +47,53 @@
 	}
 </script>
 
-<div class="flex h-screen bg-zinc-950 text-zinc-100">
-	<aside class="flex w-72 flex-col border-r border-zinc-800 bg-zinc-900">
-		<div class="flex items-center justify-between border-b border-zinc-800 px-4 py-3">
-			<h1 class="text-lg font-semibold">Clawless</h1>
+<div class="flex h-screen bg-background text-foreground">
+	<aside class="flex w-72 flex-col border-r border-border bg-sidebar">
+		<div class="flex h-14 items-center justify-between border-b border-border px-4">
+			<h1 class="text-base font-semibold tracking-tight">Clawless</h1>
 			<div class="flex items-center gap-2">
 				<button
 					onclick={() => (showSettings = !showSettings)}
-					class="h-2 w-2 rounded-full {connected ? 'bg-green-500' : 'bg-red-500'}"
-					title={connected ? 'Connected' : 'Disconnected — click to configure'}
-				></button>
-				<button onclick={refresh} class="text-xs text-zinc-400 hover:text-zinc-200">
-					Refresh
+					class="group flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+					title={connected ? 'Connected' : 'Disconnected'}
+				>
+					<span
+						class="h-1.5 w-1.5 rounded-full {connected ? 'bg-emerald-500' : 'bg-red-500'}"
+					></span>
+					<span class="hidden group-hover:inline">
+						{connected ? 'Connected' : 'Offline'}
+					</span>
+				</button>
+				<button
+					onclick={refresh}
+					class="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+					title="Refresh sessions"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5">
+						<path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+						<path d="M3 3v5h5" />
+						<path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+						<path d="M16 16h5v5" />
+					</svg>
 				</button>
 			</div>
 		</div>
 
 		{#if showSettings}
-			<div class="border-b border-zinc-800 px-3 py-2">
-				<label class="mb-1 block text-xs text-zinc-400">Gateway URL</label>
+			<div class="border-b border-border px-3 py-3">
+				<label for="gateway-url" class="mb-1.5 block text-xs font-medium text-muted-foreground">Gateway URL</label>
 				<div class="flex gap-1.5">
 					<input
+						id="gateway-url"
 						type="text"
 						bind:value={urlInput}
 						placeholder="ws://host:18789"
-						class="flex-1 rounded bg-zinc-800 px-2 py-1 text-xs text-zinc-200 outline-none focus:ring-1 focus:ring-zinc-600"
+						class="flex-1 rounded-md border border-border bg-sidebar-muted px-2.5 py-1.5 text-xs text-foreground outline-none ring-ring focus:ring-1"
 						onkeydown={(e) => e.key === 'Enter' && handleConnect()}
 					/>
 					<button
 						onclick={handleConnect}
-						class="shrink-0 rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white hover:bg-blue-500"
+						class="shrink-0 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
 					>
 						Connect
 					</button>
@@ -85,8 +102,11 @@
 		{/if}
 
 		{#if error}
-			<div class="px-4 py-2 text-xs text-red-400">{error}</div>
+			<div class="border-b border-destructive/30 bg-destructive/10 px-4 py-2 text-xs text-destructive">
+				{error}
+			</div>
 		{/if}
+
 		<SessionList {sessions} />
 	</aside>
 

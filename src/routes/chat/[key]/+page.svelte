@@ -106,37 +106,44 @@
 		});
 	}
 
-	// Reload when session key changes
 	$effect(() => {
-		sessionKey; // track dependency
+		sessionKey;
 		loadChat();
 	});
 </script>
 
 <div class="flex flex-1 flex-col overflow-hidden">
-	<header class="border-b border-zinc-800 px-4 py-3">
-		<h2 class="truncate text-sm font-medium text-zinc-300">{sessionKey}</h2>
+	<header class="flex h-14 items-center border-b border-border px-6">
+		<h2 class="truncate text-sm font-medium text-foreground">{sessionKey}</h2>
 	</header>
 
 	{#if error}
-		<div class="px-4 py-2 text-xs text-red-400">{error}</div>
+		<div class="border-b border-destructive/30 bg-destructive/10 px-6 py-2 text-xs text-destructive">
+			{error}
+		</div>
 	{/if}
 
-	<div class="flex-1 overflow-y-auto px-4 py-4">
-		{#each messages as msg}
-			<ChatMessageComponent message={msg} />
-		{/each}
+	<div class="flex-1 overflow-y-auto">
+		<div class="mx-auto max-w-3xl px-6 py-6">
+			{#each messages as msg}
+				<ChatMessageComponent message={msg} />
+			{/each}
 
-		{#if isStreaming && streamingContent}
-			<div class="mb-3">
-				<div class="text-xs font-medium text-zinc-500 mb-1">Assistant</div>
-				<div class="rounded-lg bg-zinc-800 px-3 py-2 text-sm text-zinc-200">
-					<StreamingText content={streamingContent} />
+			{#if isStreaming && streamingContent}
+				<div class="group mb-4 flex gap-3">
+					<div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
+						A
+					</div>
+					<div class="flex max-w-[75%] flex-col">
+						<div class="rounded-2xl rounded-bl-md bg-card px-4 py-2.5 text-sm leading-relaxed text-card-foreground">
+							<StreamingText content={streamingContent} />
+						</div>
+					</div>
 				</div>
-			</div>
-		{/if}
+			{/if}
 
-		<div bind:this={messagesEnd}></div>
+			<div bind:this={messagesEnd}></div>
+		</div>
 	</div>
 
 	<ChatInput onSend={handleSend} onAbort={handleAbort} {isStreaming} />
