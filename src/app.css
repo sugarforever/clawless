@@ -1,32 +1,82 @@
 @import 'tailwindcss';
 
 @theme {
-	--color-background: oklch(0.145 0 0);
-	--color-foreground: oklch(0.985 0 0);
-	--color-card: oklch(0.175 0 0);
-	--color-card-foreground: oklch(0.985 0 0);
-	--color-muted: oklch(0.25 0 0);
-	--color-muted-foreground: oklch(0.556 0 0);
-	--color-border: oklch(0.3 0 0);
-	--color-input: oklch(0.3 0 0);
-	--color-ring: oklch(0.556 0 0);
-	--color-accent: oklch(0.25 0 0);
-	--color-accent-foreground: oklch(0.985 0 0);
-	--color-primary: oklch(0.985 0 0);
-	--color-primary-foreground: oklch(0.205 0 0);
-	--color-destructive: oklch(0.577 0.245 27.325);
-	--color-destructive-foreground: oklch(0.985 0 0);
-	--color-sidebar: oklch(0.16 0 0);
-	--color-sidebar-foreground: oklch(0.985 0 0);
-	--color-sidebar-muted: oklch(0.25 0 0);
-	--color-sidebar-accent: oklch(0.22 0 0);
-	--color-user-bubble: oklch(0.28 0.04 260);
-	--color-user-bubble-foreground: oklch(0.88 0.03 260);
+	--color-background: var(--clw-background);
+	--color-foreground: var(--clw-foreground);
+	--color-card: var(--clw-card);
+	--color-card-foreground: var(--clw-card-foreground);
+	--color-muted: var(--clw-muted);
+	--color-muted-foreground: var(--clw-muted-foreground);
+	--color-border: var(--clw-border);
+	--color-input: var(--clw-input);
+	--color-ring: var(--clw-ring);
+	--color-accent: var(--clw-accent);
+	--color-accent-foreground: var(--clw-accent-foreground);
+	--color-primary: var(--clw-primary);
+	--color-primary-foreground: var(--clw-primary-foreground);
+	--color-destructive: var(--clw-destructive);
+	--color-destructive-foreground: var(--clw-destructive-foreground);
+	--color-sidebar: var(--clw-sidebar);
+	--color-sidebar-foreground: var(--clw-sidebar-foreground);
+	--color-sidebar-muted: var(--clw-sidebar-muted);
+	--color-sidebar-accent: var(--clw-sidebar-accent);
+	--color-user-bubble: var(--clw-user-bubble);
+	--color-user-bubble-foreground: var(--clw-user-bubble-foreground);
 	--radius-sm: 0.375rem;
 	--radius-md: 0.5rem;
 	--radius-lg: 0.75rem;
 	--font-heading: 'Poppins', system-ui, sans-serif;
 	--font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Light mode (default) */
+:root {
+	--clw-background: oklch(0.985 0 0);
+	--clw-foreground: oklch(0.145 0 0);
+	--clw-card: oklch(1 0 0);
+	--clw-card-foreground: oklch(0.145 0 0);
+	--clw-muted: oklch(0.94 0 0);
+	--clw-muted-foreground: oklch(0.46 0 0);
+	--clw-border: oklch(0.88 0 0);
+	--clw-input: oklch(0.88 0 0);
+	--clw-ring: oklch(0.46 0 0);
+	--clw-accent: oklch(0.94 0 0);
+	--clw-accent-foreground: oklch(0.145 0 0);
+	--clw-primary: oklch(0.205 0 0);
+	--clw-primary-foreground: oklch(0.985 0 0);
+	--clw-destructive: oklch(0.577 0.245 27.325);
+	--clw-destructive-foreground: oklch(0.985 0 0);
+	--clw-sidebar: oklch(0.97 0 0);
+	--clw-sidebar-foreground: oklch(0.145 0 0);
+	--clw-sidebar-muted: oklch(0.94 0 0);
+	--clw-sidebar-accent: oklch(0.92 0 0);
+	--clw-user-bubble: oklch(0.82 0.04 260);
+	--clw-user-bubble-foreground: oklch(0.2 0.03 260);
+}
+
+/* Dark mode */
+.dark {
+	--clw-background: oklch(0.145 0 0);
+	--clw-foreground: oklch(0.985 0 0);
+	--clw-card: oklch(0.175 0 0);
+	--clw-card-foreground: oklch(0.985 0 0);
+	--clw-muted: oklch(0.25 0 0);
+	--clw-muted-foreground: oklch(0.556 0 0);
+	--clw-border: oklch(0.3 0 0);
+	--clw-input: oklch(0.3 0 0);
+	--clw-ring: oklch(0.556 0 0);
+	--clw-accent: oklch(0.25 0 0);
+	--clw-accent-foreground: oklch(0.985 0 0);
+	--clw-primary: oklch(0.985 0 0);
+	--clw-primary-foreground: oklch(0.205 0 0);
+	--clw-destructive: oklch(0.577 0.245 27.325);
+	--clw-destructive-foreground: oklch(0.985 0 0);
+	--clw-sidebar: oklch(0.16 0 0);
+	--clw-sidebar-foreground: oklch(0.985 0 0);
+	--clw-sidebar-muted: oklch(0.25 0 0);
+	--clw-sidebar-accent: oklch(0.22 0 0);
+	--clw-user-bubble: oklch(0.28 0.04 260);
+	--clw-user-bubble-foreground: oklch(0.88 0.03 260);
 }
 
 * {
@@ -47,11 +97,11 @@ body {
 	background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-	background: oklch(0.3 0 0);
+	background: var(--clw-muted);
 	border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-	background: oklch(0.4 0 0);
+	background: var(--clw-muted-foreground);
 }
 
 /* Streaming cursor animation */

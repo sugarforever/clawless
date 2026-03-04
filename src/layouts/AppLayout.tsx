@@ -1,14 +1,16 @@
 import { useState, useCallback } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router';
 import { useGateway } from '../hooks/useGateway';
+import { useAppearance } from '../hooks/useAppearance';
 import { disconnect, getGatewayUrl, setAuthToken } from '$lib/gateway';
-import { storage } from '$lib/storage';
+import { storage, type Appearance } from '$lib/storage';
 import SessionList from '../components/SessionList';
 import ErrorAlert from '../components/ErrorAlert';
-import { RefreshIcon, PlusIcon } from '../components/Icons';
+import { RefreshIcon, PlusIcon, SunIcon, MoonIcon, MonitorIcon } from '../components/Icons';
 
 export default function AppLayout() {
 	const { sessions, connected, error, refresh, connectToGateway } = useGateway();
+	const { appearance, setAppearance } = useAppearance();
 	const [showSettings, setShowSettings] = useState(false);
 	const [urlInput, setUrlInput] = useState(
 		() => storage.getGatewayUrl() || getGatewayUrl()
@@ -111,6 +113,31 @@ export default function AppLayout() {
 						>
 							Connect
 						</button>
+
+						<div className="mt-3 border-t border-border pt-3">
+							<span className="mb-1.5 block text-xs font-medium text-muted-foreground">Appearance</span>
+							<div className="flex rounded-md border border-border">
+								{([
+									{ value: 'light' as Appearance, icon: SunIcon, label: 'Light' },
+									{ value: 'system' as Appearance, icon: MonitorIcon, label: 'System' },
+									{ value: 'dark' as Appearance, icon: MoonIcon, label: 'Dark' },
+								]).map(({ value, icon: Icon, label }) => (
+									<button
+										key={value}
+										onClick={() => setAppearance(value)}
+										className={`flex flex-1 items-center justify-center gap-1 py-1.5 text-xs transition-colors duration-150 ${
+											appearance === value
+												? 'bg-accent font-medium text-foreground'
+												: 'text-muted-foreground hover:text-foreground'
+										}`}
+										title={label}
+									>
+										<Icon />
+										{label}
+									</button>
+								))}
+							</div>
+						</div>
 					</div>
 				)}
 
