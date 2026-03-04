@@ -1,5 +1,6 @@
 import { type ChatMessage as ChatMessageType, extractTextContent } from '$lib/types';
 import { cn } from '$lib/utils';
+import Markdown from './Markdown';
 
 interface Props {
 	message: ChatMessageType;
@@ -36,7 +37,13 @@ export default function ChatMessage({ message }: Props) {
 								: 'rounded-bl-md bg-card text-card-foreground'
 					)}
 				>
-					<div className="whitespace-pre-wrap break-words">{text}</div>
+					<div className="break-words">
+						{isUser || isTool ? (
+							<span className="whitespace-pre-wrap">{text}</span>
+						) : (
+							<Markdown content={text} />
+						)}
+					</div>
 				</div>
 
 				{message.usage && (
