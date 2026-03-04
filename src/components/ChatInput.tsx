@@ -39,8 +39,8 @@ export default function ChatInput({ onSend, onAbort, isStreaming }: Props) {
 
 	return (
 		<div className="border-t border-border bg-background px-4 py-3">
-			<div className="mx-auto flex max-w-3xl items-end gap-2">
-				<div className="relative flex-1">
+			<div className="mx-auto max-w-3xl">
+				<div className="flex items-end gap-2 rounded-xl border border-border bg-card px-3 py-2 ring-ring transition-colors duration-150 focus-within:border-ring focus-within:ring-1">
 					<textarea
 						ref={textareaRef}
 						value={input}
@@ -48,28 +48,28 @@ export default function ChatInput({ onSend, onAbort, isStreaming }: Props) {
 						onKeyDown={handleKeyDown}
 						placeholder="Send a message..."
 						rows={1}
-						className="w-full resize-none rounded-xl border border-border bg-card px-4 py-3 pr-12 text-sm text-foreground placeholder-muted-foreground outline-none ring-ring transition-colors duration-150 focus:border-ring focus:ring-1"
+						className="flex-1 resize-none bg-transparent py-1 text-sm text-foreground placeholder-muted-foreground outline-none"
 					/>
+					{isStreaming ? (
+						<button
+							onClick={onAbort}
+							className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-destructive text-destructive-foreground transition-colors duration-150 hover:bg-destructive/80"
+							title="Stop generating"
+						>
+							<StopIcon className="h-3.5 w-3.5" />
+						</button>
+					) : (
+						<button
+							onClick={handleSubmit}
+							disabled={!input.trim()}
+							className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-colors duration-150 hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-30"
+							title="Send message"
+						>
+							<SendIcon className="h-3.5 w-3.5" />
+						</button>
+					)}
 				</div>
-
-				{isStreaming ? (
-					<button
-						onClick={onAbort}
-						className="mb-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-destructive text-destructive-foreground transition-colors duration-150 hover:bg-destructive/80"
-						title="Stop generating"
-					>
-						<StopIcon />
-					</button>
-				) : (
-					<button
-						onClick={handleSubmit}
-						disabled={!input.trim()}
-						className="mb-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-colors duration-150 hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-30"
-						title="Send message"
-					>
-						<SendIcon />
-					</button>
-				)}
+				<p className="mt-1.5 text-center text-[11px] text-muted-foreground/50">Enter to send, Shift+Enter for new line</p>
 			</div>
 		</div>
 	);

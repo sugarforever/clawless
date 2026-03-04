@@ -62,9 +62,11 @@ export default function AppLayout() {
 	return (
 		<div className="flex h-screen bg-background text-foreground">
 			<aside className="flex w-72 flex-col border-r border-border bg-sidebar">
+				{/* macOS traffic light spacer */}
+				<div className="h-[30px] shrink-0" data-tauri-drag-region="" />
 				{/* Header */}
-				<div className="relative flex h-14 items-center justify-between border-b border-border px-4">
-					<h1 className="font-heading text-base font-semibold tracking-tight">Clawless</h1>
+				<div className="relative flex h-10 items-center justify-between border-b border-border px-4" data-tauri-drag-region="">
+					<h1 className="font-heading text-sm font-semibold tracking-tight" data-tauri-drag-region="">Clawless</h1>
 					<button
 						ref={gearRef}
 						onClick={() => setShowSettings(s => !s)}
@@ -206,7 +208,7 @@ export default function AppLayout() {
 			</aside>
 
 			<main className="flex flex-1 flex-col overflow-hidden">
-				<Outlet context={{ connected }} />
+				<Outlet context={{ connected, sessions }} />
 			</main>
 		</div>
 	);
