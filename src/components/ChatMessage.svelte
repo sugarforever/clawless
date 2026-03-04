@@ -1,11 +1,12 @@
 <script lang="ts">
-	import type { ChatMessage } from '$lib/types';
+	import { type ChatMessage, extractTextContent } from '$lib/types';
 	import { cn } from '$lib/utils';
 
 	let { message }: { message: ChatMessage } = $props();
 
 	let isUser = $derived(message.role === 'user');
 	let isTool = $derived(message.role === 'tool');
+	let text = $derived(extractTextContent(message.content));
 </script>
 
 <div class={cn('group mb-4 flex gap-3', isUser && 'flex-row-reverse')}>
@@ -33,7 +34,7 @@
 						: 'rounded-bl-md bg-card text-card-foreground'
 			)}
 		>
-			<div class="whitespace-pre-wrap break-words">{message.content}</div>
+			<div class="whitespace-pre-wrap break-words">{text}</div>
 		</div>
 
 		{#if message.usage}

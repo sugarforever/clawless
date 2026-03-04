@@ -37,7 +37,7 @@ export function filterSessions(sessions: SessionEntry[], query: string): Session
 	const q = query.toLowerCase();
 	return sessions.filter(
 		(s) =>
-			s.sessionKey.toLowerCase().includes(q) ||
+			s.key.toLowerCase().includes(q) ||
 			s.displayName?.toLowerCase().includes(q) ||
 			s.label?.toLowerCase().includes(q) ||
 			s.channel?.toLowerCase().includes(q) ||

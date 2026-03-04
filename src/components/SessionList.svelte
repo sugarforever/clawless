@@ -27,7 +27,7 @@
 	}
 
 	function displayLabel(s: SessionEntry): string {
-		return s.displayName || s.label || formatKey(s.sessionKey);
+		return s.displayName || s.label || formatKey(s.key);
 	}
 
 	function formatKey(key: string): string {
@@ -35,6 +35,11 @@
 		const parts = key.split(':');
 		if (parts.length >= 3) return parts.slice(-1)[0];
 		return key;
+	}
+
+	function parseAgentId(key: string): string | null {
+		const match = key.match(/^agent:([^:]+)/);
+		return match ? match[1] : null;
 	}
 
 	function channelIcon(channel?: string): string {
@@ -75,10 +80,10 @@
 	</div>
 
 	<nav class="flex-1 overflow-y-auto px-2">
-		{#each filtered as session (session.sessionKey)}
-			{@const active = session.sessionKey === activeKey}
+		{#each filtered as session (session.key)}
+			{@const active = session.key === activeKey}
 			<a
-				href="/chat/{encodeURIComponent(session.sessionKey)}"
+				href="/chat/{encodeURIComponent(session.key)}"
 				class={cn(
 					'group flex gap-3 rounded-lg px-3 py-2.5 transition-colors',
 					active
@@ -92,6 +97,11 @@
 						<span class={cn('truncate text-sm font-medium', active && 'text-foreground')}>
 							{displayLabel(session)}
 						</span>
+						{#if parseAgentId(session.key)}
+							<span class="shrink-0 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+								{parseAgentId(session.key)}
+							</span>
+						{/if}
 						<span class="shrink-0 text-[11px] tabular-nums text-muted-foreground">
 							{formatTime(session.updatedAt)}
 						</span>

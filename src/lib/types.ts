@@ -11,8 +11,13 @@ export interface Response {
 	type: 'res';
 	id: string;
 	ok: boolean;
-	payload: Record<string, unknown>;
-	error?: string;
+	payload?: unknown;
+	error?: {
+		code: string;
+		message: string;
+		details?: unknown;
+		retryable?: boolean;
+	};
 }
 
 export interface Event {
@@ -26,24 +31,33 @@ export type Frame = Request | Response | Event;
 
 // Connection types
 
-export interface ConnectParams {
-	client: string;
+export interface ConnectClientInfo {
+	id: string;
+	displayName: string;
 	version: string;
-	capabilities?: string[];
+	platform: string;
+	mode: string;
+}
+
+export interface ConnectParams {
+	minProtocol: number;
+	maxProtocol: number;
+	client: ConnectClientInfo;
+	role: string;
+	auth?: { token: string };
 }
 
 export interface HelloOk {
-	version: string;
-	features: string[];
+	protocol: number;
+	server: { version: string; connId: string };
 	snapshot?: Record<string, unknown>;
-	token?: string;
 }
 
 // Session types
 
 export interface SessionEntry {
 	sessionId: string;
-	sessionKey: string;
+	key: string;
 	updatedAt: number;
 	chatType?: 'direct' | 'group' | 'channel' | 'thread';
 	channel?: string;
@@ -60,12 +74,22 @@ export interface SessionEntry {
 
 export type ChatRole = 'user' | 'assistant' | 'tool' | 'system';
 
+export type ContentBlock = { type: 'text'; text: string } | { type: string; [key: string]: unknown };
+
 export interface ChatMessage {
 	role: ChatRole;
-	content: string;
+	content: string | ContentBlock[];
 	timestamp?: number;
 	runId?: string;
 	usage?: { inputTokens: number; outputTokens: number };
+}
+
+export function extractTextContent(content: string | ContentBlock[]): string {
+	if (typeof content === 'string') return content;
+	return content
+		.filter((b): b is { type: 'text'; text: string } => b.type === 'text')
+		.map((b) => b.text)
+		.join('');
 }
 
 export type ChatEventState = 'delta' | 'final' | 'aborted' | 'error';
@@ -80,9 +104,38 @@ export interface ChatEvent {
 	usage?: { inputTokens: number; outputTokens: number };
 }
 
+// Agent management types
+
+export interface AgentSummary {
+	id: string;
+	name?: string;
+	default?: boolean;
+	workspace?: string;
+	model?: string;
+	emoji?: string;
+}
+
+export interface AgentCreateParams {
+	name: string;
+	workspace?: string;
+	emoji?: string;
+}
+
+export interface AgentUpdateParams {
+	agentId: string;
+	name?: string;
+	workspace?: string;
+	model?: string;
+}
+
 export interface AgentEvent {
 	sessionKey: string;
-	type: string;
+	runId?: string;
+	stream?: string;
+	delta?: string;
+	data?: { text?: string };
+	phase?: string;
+	type?: string;
 	tool?: string;
 	input?: unknown;
 	output?: unknown;

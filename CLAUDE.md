@@ -65,11 +65,11 @@ src-tauri/                # Rust/Tauri backend
 Frame format (JSON over WebSocket):
 ```
 Request:  { type: "req", id: string, method: string, params: object }
-Response: { type: "res", id: string, ok: boolean, payload: object }
+Response: { type: "res", id: string, ok: boolean, payload?: object, error?: { code, message, details? } }
 Event:    { type: "event", event: string, payload: object, seq: number }
 ```
 
-Connection flow: connect → send `Connect` request → receive `HelloOk` with auth token and features.
+Connection flow: connect → send `connect` request (with `minProtocol`, `maxProtocol`, `client` object with `id` from allowed client IDs, `mode` from allowed modes) → receive hello-ok with `protocol`, `server`, `snapshot`, `features`, `policy`.
 
 Chat event states: `delta` (streaming chunk), `final` (complete), `aborted`, `error`.
 

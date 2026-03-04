@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { onMount, onDestroy } from 'svelte';
-	import { loadHistory, sendMessage, abortRun, subscribeToChatEvents } from '$lib/chat';
-	import type { ChatMessage, ChatEvent } from '$lib/types';
+	import { loadHistory, sendMessage, abortRun, subscribeToChatEvents, subscribeToAgentEvents } from '$lib/chat';
+	import type { ChatMessage, ChatEvent, AgentEvent } from '$lib/types';
 	import ChatMessageComponent from '../../../components/ChatMessage.svelte';
 	import ChatInput from '../../../components/ChatInput.svelte';
 	import StreamingText from '../../../components/StreamingText.svelte';
@@ -16,15 +16,18 @@
 
 	let sessionKey = $derived(decodeURIComponent($page.params.key ?? ''));
 
-	let unsubscribe: (() => void) | undefined;
+	let unsubChat: (() => void) | undefined;
+	let unsubAgent: (() => void) | undefined;
 
 	onMount(() => {
 		loadChat();
-		unsubscribe = subscribeToChatEvents(handleChatEvent);
+		unsubChat = subscribeToChatEvents(handleChatEvent);
+		unsubAgent = subscribeToAgentEvents(handleAgentEvent);
 	});
 
 	onDestroy(() => {
-		unsubscribe?.();
+		unsubChat?.();
+		unsubAgent?.();
 	});
 
 	async function loadChat() {
@@ -37,6 +40,16 @@
 			scrollToBottom();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load history';
+		}
+	}
+
+	function handleAgentEvent(event: AgentEvent) {
+		if (event.sessionKey !== sessionKey) return;
+		if (event.stream === 'assistant' && event.delta) {
+			isStreaming = true;
+			currentRunId = event.runId;
+			streamingContent += event.delta;
+			scrollToBottom();
 		}
 	}
 

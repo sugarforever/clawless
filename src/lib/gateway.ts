@@ -1,15 +1,15 @@
-import type { Request, Response, Event, Frame, ConnectParams, HelloOk } from './types';
+import type { Request, Response, Event, Frame, HelloOk } from './types';
 
 type EventHandler = (event: Event) => void;
 type ResponseResolver = { resolve: (res: Response) => void; reject: (err: Error) => void };
 
-const DEFAULT_GATEWAY_URL = 'ws://localhost:18789';
+const DEFAULT_GATEWAY_URL = 'wss://vm-0-14-ubuntu.tailf58059.ts.net';
 let gatewayUrl = DEFAULT_GATEWAY_URL;
 const RECONNECT_BASE_MS = 1000;
 const RECONNECT_MAX_MS = 30000;
 
 let ws: WebSocket | null = null;
-let token: string | undefined;
+let authToken: string | undefined;
 let reqId = 0;
 let reconnectAttempt = 0;
 let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
@@ -34,21 +34,21 @@ function handleMessage(data: string): void {
 		return;
 	}
 
-	if (frame.type === 'res') {
+	if (frame.type === 'event') {
+		const handlers = eventHandlers.get(frame.event);
+		if (handlers) {
+			for (const handler of handlers) {
+				handler(frame);
+			}
+		}
+	} else if (frame.type === 'res') {
 		const resolver = pending.get(frame.id);
 		if (resolver) {
 			pending.delete(frame.id);
 			if (frame.ok) {
 				resolver.resolve(frame);
 			} else {
-				resolver.reject(new Error(frame.error ?? 'Request failed'));
-			}
-		}
-	} else if (frame.type === 'event') {
-		const handlers = eventHandlers.get(frame.event);
-		if (handlers) {
-			for (const handler of handlers) {
-				handler(frame);
+				resolver.reject(new Error(frame.error?.message ?? 'Request failed'));
 			}
 		}
 	}
@@ -90,12 +90,23 @@ export function connect(url?: string): Promise<HelloOk> {
 	ws.onopen = async () => {
 		reconnectAttempt = 0;
 		try {
-			const res = await send<HelloOk>('Connect', {
-				client: 'clawless',
-				version: '0.1.0',
-				capabilities: ['tool-events']
-			} satisfies ConnectParams);
-			token = res.token;
+			const params: Record<string, unknown> = {
+				minProtocol: 3,
+				maxProtocol: 3,
+				client: {
+					id: 'gateway-client',
+					displayName: 'Clawless',
+					version: '0.1.0',
+					platform: 'tauri',
+					mode: 'ui'
+				},
+				role: 'operator',
+				scopes: ['operator.read', 'operator.write', 'chat']
+			};
+			if (authToken) {
+				params.auth = { token: authToken };
+			}
+			const res = await send<HelloOk>('connect', params);
 			connectionResolve?.(res);
 		} catch (err) {
 			connectionReject?.(err instanceof Error ? err : new Error(String(err)));
@@ -112,6 +123,9 @@ export function connect(url?: string): Promise<HelloOk> {
 		}
 		pending.clear();
 		ws = null;
+		connectionReject?.(new Error('Connection closed'));
+		connectionResolve = null;
+		connectionReject = null;
 		scheduleReconnect();
 	};
 
@@ -174,6 +188,10 @@ export function isConnected(): boolean {
 	return ws !== null && ws.readyState === WebSocket.OPEN;
 }
 
-export function getToken(): string | undefined {
-	return token;
+export function setAuthToken(t: string): void {
+	authToken = t;
+}
+
+export function getAuthToken(): string | undefined {
+	return authToken;
 }
