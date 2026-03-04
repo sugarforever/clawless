@@ -44,5 +44,12 @@ export function useGateway() {
 		};
 	}, [connectToGateway]);
 
-	return { sessions, connected, error, refresh, connectToGateway, setError };
+	const handleDisconnect = useCallback(() => {
+		disconnect();
+		setConnected(false);
+		setSessions([]);
+		setError('');
+	}, []);
+
+	return { sessions, connected, error, refresh, connectToGateway, handleDisconnect, setError };
 }

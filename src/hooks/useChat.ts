@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { loadHistory, sendMessage, abortRun, subscribeToChatEvents, subscribeToAgentEvents } from '$lib/chat';
 import type { ChatMessage, ChatEvent, AgentEvent } from '$lib/types';
 
-export function useChat(sessionKey: string) {
+export function useChat(sessionKey: string, connected: boolean) {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [streamingContent, setStreamingContent] = useState<string>('');
 	const [isStreaming, setIsStreaming] = useState(false);
@@ -19,6 +19,15 @@ export function useChat(sessionKey: string) {
 
 	useEffect(() => {
 		let cancelled = false;
+
+		if (!connected) {
+			setError('');
+			setMessages([]);
+			setStreamingContent('');
+			streamingRef.current = '';
+			setIsStreaming(false);
+			return;
+		}
 
 		async function load() {
 			setError('');
@@ -100,7 +109,7 @@ export function useChat(sessionKey: string) {
 			unsubChat();
 			unsubAgent();
 		};
-	}, [sessionKey, scrollToBottom]);
+	}, [sessionKey, connected, scrollToBottom]);
 
 	const handleSend = useCallback(async (message: string) => {
 		setMessages(prev => [...prev, { role: 'user' as const, content: message }]);

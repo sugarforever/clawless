@@ -1,4 +1,4 @@
-import { useParams } from 'react-router';
+import { useParams, useOutletContext } from 'react-router';
 import { useChat } from '../hooks/useChat';
 import ChatMessage from '../components/ChatMessage';
 import ChatInput from '../components/ChatInput';
@@ -8,7 +8,8 @@ import ErrorAlert from '../components/ErrorAlert';
 export default function ChatPage() {
 	const { key } = useParams<{ key: string }>();
 	const sessionKey = decodeURIComponent(key ?? '');
-	const { messages, streamingContent, isStreaming, error, messagesEndRef, handleSend, handleAbort } = useChat(sessionKey);
+	const { connected } = useOutletContext<{ connected: boolean }>();
+	const { messages, streamingContent, isStreaming, error, messagesEndRef, handleSend, handleAbort } = useChat(sessionKey, connected);
 
 	return (
 		<div className="flex flex-1 flex-col overflow-hidden">
