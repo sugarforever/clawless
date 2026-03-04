@@ -14,6 +14,7 @@ let reqId = 0;
 let reconnectAttempt = 0;
 let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
 let intentionalClose = false;
+let generation = 0;
 
 const pending = new Map<string, ResponseResolver>();
 const eventHandlers = new Map<string, Set<EventHandler>>();
@@ -78,6 +79,8 @@ export function connect(url?: string): Promise<HelloOk> {
 		return connectionPromise;
 	}
 
+	// Bump generation so any in-flight onclose from a previous WS is ignored
+	const gen = ++generation;
 	intentionalClose = false;
 
 	connectionPromise = new Promise<HelloOk>((resolve, reject) => {
@@ -88,6 +91,7 @@ export function connect(url?: string): Promise<HelloOk> {
 	ws = new WebSocket(gatewayUrl);
 
 	ws.onopen = async () => {
+		if (gen !== generation) return;
 		reconnectAttempt = 0;
 		try {
 			const params: Record<string, unknown> = {
@@ -107,8 +111,10 @@ export function connect(url?: string): Promise<HelloOk> {
 				params.auth = { token: authToken };
 			}
 			const res = await send<HelloOk>('connect', params);
+			if (gen !== generation) return;
 			connectionResolve?.(res);
 		} catch (err) {
+			if (gen !== generation) return;
 			connectionReject?.(err instanceof Error ? err : new Error(String(err)));
 		}
 	};
@@ -118,6 +124,9 @@ export function connect(url?: string): Promise<HelloOk> {
 	};
 
 	ws.onclose = () => {
+		// Stale socket from a previous generation — ignore entirely
+		if (gen !== generation) return;
+
 		for (const [, resolver] of pending) {
 			resolver.reject(new Error('Connection closed'));
 		}
@@ -138,12 +147,15 @@ export function connect(url?: string): Promise<HelloOk> {
 
 export function disconnect(): void {
 	intentionalClose = true;
+	generation++;
+	connectionResolve = null;
+	connectionReject = null;
+	connectionPromise = null;
 	if (reconnectTimer) clearTimeout(reconnectTimer);
 	if (ws) {
 		ws.close();
 		ws = null;
 	}
-	connectionPromise = null;
 }
 
 export function send<T = Record<string, unknown>>(

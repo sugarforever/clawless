@@ -25,6 +25,8 @@
 	--radius-sm: 0.375rem;
 	--radius-md: 0.5rem;
 	--radius-lg: 0.75rem;
+	--font-heading: 'Poppins', system-ui, sans-serif;
+	--font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -34,7 +36,7 @@
 body {
 	background-color: var(--color-background);
 	color: var(--color-foreground);
-	font-family: system-ui, -apple-system, sans-serif;
+	font-family: var(--font-sans);
 }
 
 /* Scrollbar styling */
@@ -50,4 +52,21 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
 	background: oklch(0.4 0 0);
+}
+
+/* Streaming cursor animation */
+@keyframes blink-cursor {
+	0%, 100% { opacity: 0.6; }
+	50% { opacity: 0; }
+}
+
+.streaming-cursor {
+	animation: blink-cursor 1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.streaming-cursor {
+		animation: none;
+		opacity: 0.6;
+	}
 }
