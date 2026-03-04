@@ -29,19 +29,24 @@ export default function ChatPage() {
 			{error && <ErrorAlert message={error} />}
 
 			<div className="flex-1 overflow-y-auto">
-				<div className="mx-auto max-w-3xl px-6 py-6">
+				<div className="py-2">
 					{messages.map((msg, i) => (
 						<ChatMessage key={i} message={msg} />
 					))}
 
 					{isStreaming && streamingContent && (
-						<div className="group mb-4 flex gap-3">
-							<div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
-								A
-							</div>
-							<div className="flex max-w-[75%] flex-col">
-								<div className="rounded-2xl rounded-bl-md bg-card px-4 py-2.5 text-sm leading-relaxed text-card-foreground">
-									<StreamingText content={streamingContent} />
+						<div className="px-5 py-2">
+							<div className="flex items-start gap-3">
+								<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-600 text-xs font-bold text-white">
+									OC
+								</div>
+								<div className="min-w-0 flex-1">
+									<div className="flex items-baseline gap-2">
+										<span className="text-sm font-bold text-foreground">OpenClaw</span>
+									</div>
+									<div className="mt-0.5 text-sm leading-relaxed text-foreground">
+										<StreamingText content={streamingContent} />
+									</div>
 								</div>
 							</div>
 						</div>
