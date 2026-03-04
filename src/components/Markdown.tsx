@@ -6,14 +6,14 @@ import type { Components } from 'react-markdown';
 
 const components: Components = {
 	pre({ children }) {
-		return <pre className="my-2 overflow-x-auto rounded-lg bg-muted p-3 text-xs">{children}</pre>;
+		return <pre className="my-2 overflow-x-auto rounded bg-muted p-3 text-xs">{children}</pre>;
 	},
 	code({ className, children, ...props }) {
 		const isBlock = className?.startsWith('hljs') || className?.startsWith('language-');
 		if (isBlock) {
 			return <code className={className} {...props}>{children}</code>;
 		}
-		return <code className="rounded bg-muted px-1 py-0.5 text-xs" {...props}>{children}</code>;
+		return <code className="rounded-sm bg-muted px-1 py-0.5 text-xs font-medium" {...props}>{children}</code>;
 	},
 	a({ href, children }) {
 		return <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">{children}</a>;

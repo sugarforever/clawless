@@ -8,12 +8,12 @@ interface Props {
 	message: ChatMessageType;
 }
 
-const roleConfig: Record<string, { label: string; initials: string; color: string }> = {
-	user: { label: 'You', initials: 'Y', color: 'bg-blue-600 text-white' },
-	assistant: { label: 'OpenClaw', initials: 'OC', color: 'bg-emerald-600 text-white' },
-	tool: { label: 'Tool', initials: 'T', color: 'bg-amber-600 text-white' },
-	toolResult: { label: 'Tool Result', initials: 'TR', color: 'bg-muted text-muted-foreground' },
-	system: { label: 'System', initials: 'S', color: 'bg-muted text-muted-foreground' },
+const roleConfig: Record<string, { label: string; labelClass: string }> = {
+	user: { label: 'You', labelClass: 'bg-foreground text-background px-1.5 py-0.5 rounded-sm' },
+	assistant: { label: 'OpenClaw', labelClass: 'border border-foreground/80 px-1.5 py-0.5 rounded-sm text-foreground' },
+	tool: { label: 'Tool', labelClass: 'text-muted-foreground' },
+	toolResult: { label: 'Tool Result', labelClass: 'text-muted-foreground' },
+	system: { label: 'System', labelClass: 'text-muted-foreground' },
 };
 
 function CollapsedMessage({ label, text, isError }: { label: string; text: string; isError?: boolean }) {
@@ -55,35 +55,31 @@ export default function ChatMessage({ message }: Props) {
 			? `${config.label}: ${message.toolName}`
 			: config.label;
 		return (
-			<div className="px-5 py-1">
+			<div className="px-6 py-1.5">
 				<CollapsedMessage label={label} text={text} isError={message.isError} />
 			</div>
 		);
 	}
 
 	return (
-		<div className="group px-5 py-2 transition-colors duration-100 hover:bg-muted/30">
-			<div className="flex items-start gap-3">
-				<div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-xs font-bold ${config.color}`}>
-					{config.initials}
-				</div>
-				<div className="min-w-0 flex-1">
-					<div className="flex items-baseline gap-2">
-						<span className="text-sm font-bold text-foreground">{config.label}</span>
-						{message.usage && (
-							<span className="text-[11px] tabular-nums text-muted-foreground opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-								{message.usage.inputTokens.toLocaleString()} in / {message.usage.outputTokens.toLocaleString()} out
-							</span>
-						)}
-					</div>
-					<div className="mt-0.5 text-sm leading-relaxed text-foreground">
-						{message.role === 'user' ? (
-							<span className="whitespace-pre-wrap break-words">{text}</span>
-						) : (
-							<Markdown content={text} />
-						)}
-					</div>
-				</div>
+		<div className={cn(
+			'group px-6 py-3 transition-colors duration-150',
+			message.role === 'user' ? 'bg-muted/40' : ''
+		)}>
+			<div className="flex items-center gap-2">
+				<span className={cn('text-[10px] font-semibold uppercase tracking-widest', config.labelClass)}>{config.label}</span>
+				{message.usage && (
+					<span className="text-[10px] tabular-nums text-muted-foreground/60 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+						{message.usage.inputTokens.toLocaleString()} in / {message.usage.outputTokens.toLocaleString()} out
+					</span>
+				)}
+			</div>
+			<div className="mt-1 text-[13px] leading-[1.7] text-foreground">
+				{message.role === 'user' ? (
+					<span className="whitespace-pre-wrap break-words">{text}</span>
+				) : (
+					<Markdown content={text} />
+				)}
 			</div>
 		</div>
 	);

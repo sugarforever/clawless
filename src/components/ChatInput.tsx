@@ -38,39 +38,37 @@ export default function ChatInput({ onSend, onAbort, isStreaming }: Props) {
 	}
 
 	return (
-		<div className="border-t border-border bg-background px-5 py-3">
-			<div>
-				<div className="flex items-end gap-2 rounded-xl border border-border bg-card px-3 py-2 ring-ring transition-colors duration-150 focus-within:border-ring focus-within:ring-1">
-					<textarea
-						ref={textareaRef}
-						value={input}
-						onChange={e => { setInput(e.target.value); autoResize(); }}
-						onKeyDown={handleKeyDown}
-						placeholder="Send a message..."
-						rows={1}
-						className="flex-1 resize-none bg-transparent py-1 text-sm text-foreground placeholder-muted-foreground outline-none"
-					/>
-					{isStreaming ? (
-						<button
-							onClick={onAbort}
-							className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-destructive text-destructive-foreground transition-colors duration-150 hover:bg-destructive/80"
-							title="Stop generating"
-						>
-							<StopIcon className="h-3.5 w-3.5" />
-						</button>
-					) : (
-						<button
-							onClick={handleSubmit}
-							disabled={!input.trim()}
-							className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-colors duration-150 hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-30"
-							title="Send message"
-						>
-							<SendIcon className="h-3.5 w-3.5" />
-						</button>
-					)}
-				</div>
-				<p className="mt-1.5 text-center text-[11px] text-muted-foreground/50">Enter to send, Shift+Enter for new line</p>
+		<div className="border-t border-border bg-background px-6 py-3">
+			<div className="flex items-end gap-2 rounded-md border border-border bg-card px-3 py-2 transition-colors duration-200 focus-within:border-foreground/30">
+				<textarea
+					ref={textareaRef}
+					value={input}
+					onChange={e => { setInput(e.target.value); autoResize(); }}
+					onKeyDown={handleKeyDown}
+					placeholder="Send a message..."
+					rows={1}
+					className="flex-1 resize-none bg-transparent py-1 text-[13px] text-foreground placeholder-muted-foreground outline-none"
+				/>
+				{isStreaming ? (
+					<button
+						onClick={onAbort}
+						className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-foreground text-background transition-colors duration-200 hover:bg-foreground/80"
+						title="Stop generating"
+					>
+						<StopIcon className="h-3 w-3" />
+					</button>
+				) : (
+					<button
+						onClick={handleSubmit}
+						disabled={!input.trim()}
+						className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-foreground text-background transition-colors duration-200 hover:bg-foreground/80 disabled:cursor-not-allowed disabled:opacity-20"
+						title="Send message"
+					>
+						<SendIcon className="h-3 w-3" />
+					</button>
+				)}
 			</div>
+			<p className="mt-1.5 text-center text-[10px] uppercase tracking-wider text-muted-foreground/40">Enter to send &middot; Shift+Enter for new line</p>
 		</div>
 	);
 }

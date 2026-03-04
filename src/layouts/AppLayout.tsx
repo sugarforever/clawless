@@ -68,7 +68,7 @@ export default function AppLayout() {
 				<div className="relative flex h-10 items-center justify-between border-b border-border px-4" data-tauri-drag-region="">
 					<div className="flex items-center gap-2" data-tauri-drag-region="">
 						<span className={`h-2 w-2 shrink-0 rounded-full ${connected ? 'bg-emerald-500' : 'bg-red-500'}`} title={connected ? 'Connected' : 'Offline'} />
-						<h1 className="font-heading text-sm font-semibold tracking-tight" data-tauri-drag-region="">Clawless</h1>
+						<h1 className="text-xs font-bold uppercase tracking-[0.15em]" data-tauri-drag-region="">Clawless</h1>
 					</div>
 					<div className="flex items-center gap-0.5">
 						<button
@@ -92,7 +92,7 @@ export default function AppLayout() {
 					{showSettings && (
 						<div
 							ref={popoverRef}
-							className="absolute left-2 right-2 top-[calc(100%+4px)] z-50 rounded-lg border border-border bg-sidebar p-3 shadow-lg"
+							className="absolute left-2 right-2 top-[calc(100%+4px)] z-50 rounded-md border border-border bg-sidebar p-3 shadow-sm"
 						>
 							<span className="mb-1.5 block text-xs font-medium text-muted-foreground">Gateway</span>
 							<input

@@ -23,7 +23,7 @@ export default function ChatPage() {
 		<div className="flex flex-1 flex-col overflow-hidden">
 			<div className="h-[30px] shrink-0" data-tauri-drag-region="" />
 			<header className="flex h-10 items-center border-b border-border px-6" data-tauri-drag-region="">
-				<h2 className="truncate text-sm font-medium text-foreground" data-tauri-drag-region="">{title}</h2>
+				<h2 className="truncate text-xs font-semibold uppercase tracking-widest text-muted-foreground" data-tauri-drag-region="">{title}</h2>
 			</header>
 
 			{error && <ErrorAlert message={error} />}
@@ -35,19 +35,10 @@ export default function ChatPage() {
 					))}
 
 					{isStreaming && streamingContent && (
-						<div className="px-5 py-2">
-							<div className="flex items-start gap-3">
-								<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-600 text-xs font-bold text-white">
-									OC
-								</div>
-								<div className="min-w-0 flex-1">
-									<div className="flex items-baseline gap-2">
-										<span className="text-sm font-bold text-foreground">OpenClaw</span>
-									</div>
-									<div className="mt-0.5 text-sm leading-relaxed text-foreground">
-										<StreamingText content={streamingContent} />
-									</div>
-								</div>
+						<div className="px-6 py-3">
+							<span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">OpenClaw</span>
+							<div className="mt-1 text-[13px] leading-[1.7] text-foreground">
+								<StreamingText content={streamingContent} />
 							</div>
 						</div>
 					)}
