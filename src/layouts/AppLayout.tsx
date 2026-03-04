@@ -66,15 +66,27 @@ export default function AppLayout() {
 				<div className="h-[30px] shrink-0" data-tauri-drag-region="" />
 				{/* Header */}
 				<div className="relative flex h-10 items-center justify-between border-b border-border px-4" data-tauri-drag-region="">
-					<h1 className="font-heading text-sm font-semibold tracking-tight" data-tauri-drag-region="">Clawless</h1>
-					<button
-						ref={gearRef}
-						onClick={() => setShowSettings(s => !s)}
-						className="rounded-md p-1.5 text-muted-foreground transition-colors duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-						title="Settings"
-					>
-						<SettingsIcon />
-					</button>
+					<div className="flex items-center gap-2" data-tauri-drag-region="">
+						<span className={`h-2 w-2 shrink-0 rounded-full ${connected ? 'bg-emerald-500' : 'bg-red-500'}`} title={connected ? 'Connected' : 'Offline'} />
+						<h1 className="font-heading text-sm font-semibold tracking-tight" data-tauri-drag-region="">Clawless</h1>
+					</div>
+					<div className="flex items-center gap-0.5">
+						<button
+							onClick={refresh}
+							className="rounded-md p-1.5 text-muted-foreground transition-colors duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+							title="Refresh sessions"
+						>
+							<RefreshIcon />
+						</button>
+						<button
+							ref={gearRef}
+							onClick={() => setShowSettings(s => !s)}
+							className="rounded-md p-1.5 text-muted-foreground transition-colors duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+							title="Settings"
+						>
+							<SettingsIcon />
+						</button>
+					</div>
 
 					{/* Settings popover */}
 					{showSettings && (
@@ -178,7 +190,7 @@ export default function AppLayout() {
 					<>
 						<div className="px-3 py-2">
 							<button
-								onClick={() => navigate(`/chat/${encodeURIComponent('clawless:' + crypto.randomUUID().slice(0, 8))}`)}
+								onClick={() => navigate(`/chat/${encodeURIComponent('agent:main:clawless:' + crypto.randomUUID().slice(0, 8))}`)}
 								className="flex w-full items-center justify-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground"
 							>
 								<PlusIcon />
@@ -188,23 +200,6 @@ export default function AppLayout() {
 						<SessionList sessions={sessions} />
 					</>
 				)}
-
-				{/* Footer: connection status */}
-				<div className="mt-auto flex items-center justify-between border-t border-border px-4 py-2.5">
-					<div className="flex items-center gap-2">
-						<span className={`h-2 w-2 rounded-full ${connected ? 'bg-emerald-500' : 'bg-red-500'}`} />
-						<span className="text-xs text-muted-foreground">
-							{connected ? 'Connected' : 'Offline'}
-						</span>
-					</div>
-					<button
-						onClick={refresh}
-						className="rounded-md p-1.5 text-muted-foreground transition-colors duration-150 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-						title="Refresh sessions"
-					>
-						<RefreshIcon />
-					</button>
-				</div>
 			</aside>
 
 			<main className="flex flex-1 flex-col overflow-hidden">

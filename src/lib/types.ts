@@ -72,7 +72,7 @@ export interface SessionEntry {
 
 // Chat types
 
-export type ChatRole = 'user' | 'assistant' | 'tool' | 'system';
+export type ChatRole = 'user' | 'assistant' | 'tool' | 'toolResult' | 'system';
 
 export type ContentBlock = { type: 'text'; text: string } | { type: string; [key: string]: unknown };
 
@@ -82,6 +82,9 @@ export interface ChatMessage {
 	timestamp?: number;
 	runId?: string;
 	usage?: { inputTokens: number; outputTokens: number };
+	toolName?: string;
+	toolCallId?: string;
+	isError?: boolean;
 }
 
 export function extractTextContent(content: string | ContentBlock[]): string {

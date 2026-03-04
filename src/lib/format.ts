@@ -29,21 +29,7 @@ export function parseAgentId(key: string): string | null {
 	return match ? match[1] : null;
 }
 
-export interface ChannelBadge {
-	label: string;
-	className: string;
-}
-
-export function channelBadge(channel?: string): ChannelBadge {
-	if (!channel) return { label: 'DM', className: 'bg-muted text-muted-foreground' };
-	const c = channel.toLowerCase();
-	if (c.includes('telegram')) return { label: 'TG', className: 'bg-sky-950 text-sky-400' };
-	if (c.includes('discord')) return { label: 'DC', className: 'bg-indigo-950 text-indigo-400' };
-	if (c.includes('slack')) return { label: 'SL', className: 'bg-emerald-950 text-emerald-400' };
-	if (c.includes('whatsapp')) return { label: 'WA', className: 'bg-green-950 text-green-400' };
-	if (c.includes('matrix')) return { label: 'MX', className: 'bg-purple-950 text-purple-400' };
-	return { label: 'DM', className: 'bg-muted text-muted-foreground' };
-}
+export { getChannelInfo, type ChannelInfo } from './channels';
 
 export function agentInitials(agent: AgentSummary): string {
 	const name = agent.name ?? agent.id;
