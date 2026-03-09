@@ -68,7 +68,7 @@ export default function AppLayout() {
 				<div className="relative flex h-10 items-center justify-between border-b border-border px-4" data-tauri-drag-region="">
 					<div className="flex items-center gap-2" data-tauri-drag-region="">
 						<span className={`h-2 w-2 shrink-0 rounded-full ${connected ? 'bg-emerald-500' : 'bg-red-500'}`} title={connected ? 'Connected' : 'Offline'} />
-						<h1 className="text-xs font-bold uppercase tracking-[0.15em]" data-tauri-drag-region="">Clawless</h1>
+						<h1 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground" data-tauri-drag-region="">Clawless</h1>
 					</div>
 					<div className="flex items-center gap-0.5">
 						<button

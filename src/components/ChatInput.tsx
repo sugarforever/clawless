@@ -38,8 +38,8 @@ export default function ChatInput({ onSend, onAbort, isStreaming }: Props) {
 	}
 
 	return (
-		<div className="border-t border-border bg-background px-6 py-3">
-			<div className="flex items-end gap-2 rounded-md border border-border bg-card px-3 py-2 transition-colors duration-200 focus-within:border-foreground/30">
+		<div className="border-t border-border bg-background px-6 py-4">
+			<div className="mx-auto flex max-w-2xl items-end gap-2 rounded-lg border border-border bg-card px-4 py-2.5 transition-colors duration-200 focus-within:border-foreground/20">
 				<textarea
 					ref={textareaRef}
 					value={input}
@@ -47,7 +47,7 @@ export default function ChatInput({ onSend, onAbort, isStreaming }: Props) {
 					onKeyDown={handleKeyDown}
 					placeholder="Send a message..."
 					rows={1}
-					className="flex-1 resize-none bg-transparent py-1 text-[13px] text-foreground placeholder-muted-foreground outline-none"
+					className="flex-1 resize-none bg-transparent py-1 text-sm text-foreground placeholder-muted-foreground/60 outline-none"
 				/>
 				{isStreaming ? (
 					<button
@@ -68,7 +68,7 @@ export default function ChatInput({ onSend, onAbort, isStreaming }: Props) {
 					</button>
 				)}
 			</div>
-			<p className="mt-1.5 text-center text-[10px] uppercase tracking-wider text-muted-foreground/40">Enter to send &middot; Shift+Enter for new line</p>
+			<p className="mt-2 text-center text-[11px] text-muted-foreground/30">Enter to send &middot; Shift+Enter for new line</p>
 		</div>
 	);
 }

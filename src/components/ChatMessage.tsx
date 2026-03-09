@@ -6,11 +6,12 @@ import { cn } from '$lib/utils';
 
 interface Props {
 	message: ChatMessageType;
+	onInteractiveSubmit?: (response: string) => void;
 }
 
 const roleConfig: Record<string, { label: string; labelClass: string }> = {
-	user: { label: 'You', labelClass: 'bg-foreground text-background px-1.5 py-0.5 rounded-sm' },
-	assistant: { label: 'OpenClaw', labelClass: 'border border-foreground/80 px-1.5 py-0.5 rounded-sm text-foreground' },
+	user: { label: 'You', labelClass: 'text-foreground/70' },
+	assistant: { label: 'OpenClaw', labelClass: 'text-foreground/70' },
 	tool: { label: 'Tool', labelClass: 'text-muted-foreground' },
 	toolResult: { label: 'Tool Result', labelClass: 'text-muted-foreground' },
 	system: { label: 'System', labelClass: 'text-muted-foreground' },
@@ -46,7 +47,7 @@ function CollapsedMessage({ label, text, isError }: { label: string; text: strin
 	);
 }
 
-export default function ChatMessage({ message }: Props) {
+export default function ChatMessage({ message, onInteractiveSubmit }: Props) {
 	const isCollapsible = message.role === 'toolResult' || message.role === 'tool' || message.role === 'system';
 	const config = roleConfig[message.role] ?? roleConfig.system;
 	const text = extractTextContent(message.content);
@@ -56,30 +57,31 @@ export default function ChatMessage({ message }: Props) {
 			: config.label;
 		return (
 			<div className="px-6 py-1.5">
-				<CollapsedMessage label={label} text={text} isError={message.isError} />
+				<div className="mx-auto max-w-2xl">
+					<CollapsedMessage label={label} text={text} isError={message.isError} />
+				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className={cn(
-			'group px-6 py-3 transition-colors duration-150',
-			message.role === 'user' ? 'bg-muted/40' : ''
-		)}>
-			<div className="flex items-center gap-2">
-				<span className={cn('text-[10px] font-semibold uppercase tracking-widest', config.labelClass)}>{config.label}</span>
-				{message.usage && (
-					<span className="text-[10px] tabular-nums text-muted-foreground/60 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-						{message.usage.inputTokens.toLocaleString()} in / {message.usage.outputTokens.toLocaleString()} out
-					</span>
-				)}
-			</div>
-			<div className="mt-1 text-[13px] leading-[1.7] text-foreground">
-				{message.role === 'user' ? (
-					<span className="whitespace-pre-wrap break-words">{text}</span>
-				) : (
-					<Markdown content={text} />
-				)}
+		<div className="group px-6 py-4">
+			<div className="mx-auto max-w-2xl">
+				<div className="flex items-center gap-2">
+					<span className={cn('text-xs font-medium', config.labelClass)}>{config.label}</span>
+					{message.usage && (
+						<span className="text-[10px] tabular-nums text-muted-foreground/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+							{message.usage.inputTokens.toLocaleString()} in / {message.usage.outputTokens.toLocaleString()} out
+						</span>
+					)}
+				</div>
+				<div className="mt-1.5 text-sm leading-relaxed text-foreground">
+					{message.role === 'user' ? (
+						<span className="whitespace-pre-wrap break-words">{text}</span>
+					) : (
+						<Markdown content={text} onInteractiveSubmit={onInteractiveSubmit} />
+					)}
+				</div>
 			</div>
 		</div>
 	);

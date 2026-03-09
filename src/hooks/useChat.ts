@@ -7,15 +7,34 @@ export function useChat(sessionKey: string, connected: boolean) {
 	const [streamingContent, setStreamingContent] = useState<string>('');
 	const [isStreaming, setIsStreaming] = useState(false);
 	const [error, setError] = useState('');
+	const [hasNewMessages, setHasNewMessages] = useState(false);
 	const currentRunIdRef = useRef<string | undefined>(undefined);
 	const streamingRef = useRef('');
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+	const scrollContainerRef = useRef<HTMLDivElement>(null);
+	const isNearBottomRef = useRef(true);
+
+	const checkIfNearBottom = useCallback(() => {
+		const el = scrollContainerRef.current;
+		if (!el) return true;
+		const threshold = 100;
+		return el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+	}, []);
 
 	const scrollToBottom = useCallback(() => {
 		requestAnimationFrame(() => {
 			messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+			setHasNewMessages(false);
 		});
 	}, []);
+
+	const scrollToBottomIfNear = useCallback(() => {
+		if (isNearBottomRef.current) {
+			scrollToBottom();
+		} else {
+			setHasNewMessages(true);
+		}
+	}, [scrollToBottom]);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -58,7 +77,7 @@ export function useChat(sessionKey: string, connected: boolean) {
 					currentRunIdRef.current = event.runId;
 					streamingRef.current += event.content ?? '';
 					setStreamingContent(streamingRef.current);
-					scrollToBottom();
+					scrollToBottomIfNear();
 					break;
 				case 'final':
 					setMessages(prev => {
@@ -72,7 +91,7 @@ export function useChat(sessionKey: string, connected: boolean) {
 					setStreamingContent('');
 					setIsStreaming(false);
 					currentRunIdRef.current = undefined;
-					scrollToBottom();
+					scrollToBottomIfNear();
 					break;
 				case 'aborted':
 					if (streamingRef.current) {
@@ -100,7 +119,7 @@ export function useChat(sessionKey: string, connected: boolean) {
 				currentRunIdRef.current = event.runId;
 				streamingRef.current += event.delta;
 				setStreamingContent(streamingRef.current);
-				scrollToBottom();
+				scrollToBottomIfNear();
 			}
 		});
 
@@ -109,7 +128,7 @@ export function useChat(sessionKey: string, connected: boolean) {
 			unsubChat();
 			unsubAgent();
 		};
-	}, [sessionKey, connected, scrollToBottom]);
+	}, [sessionKey, connected, scrollToBottom, scrollToBottomIfNear]);
 
 	const handleSend = useCallback(async (message: string) => {
 		setMessages(prev => [...prev, { role: 'user' as const, content: message }]);
@@ -130,5 +149,12 @@ export function useChat(sessionKey: string, connected: boolean) {
 		}
 	}, [sessionKey]);
 
-	return { messages, streamingContent, isStreaming, error, messagesEndRef, handleSend, handleAbort };
+	const handleScroll = useCallback(() => {
+		isNearBottomRef.current = checkIfNearBottom();
+		if (isNearBottomRef.current) {
+			setHasNewMessages(false);
+		}
+	}, [checkIfNearBottom]);
+
+	return { messages, streamingContent, isStreaming, error, hasNewMessages, messagesEndRef, scrollContainerRef, handleSend, handleAbort, handleScroll, scrollToBottom };
 }
