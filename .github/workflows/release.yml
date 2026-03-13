@@ -60,6 +60,7 @@ jobs:
           APPLE_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.TEAM_ID }}
         with:
+          tauriScript: pnpm tauri
           tagName: ${{ github.ref_name }}
           releaseName: "Clawless ${{ github.ref_name }}"
           releaseBody: "See the assets to download and install."
