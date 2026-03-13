@@ -14,7 +14,7 @@ export function formatTime(ts: number): string {
 }
 
 export function displayLabel(s: SessionEntry): string {
-	return s.displayName || s.label || formatKey(s.key);
+	return s.derivedTitle || s.displayName || s.label || formatKey(s.key);
 }
 
 export function formatKey(key: string): string {

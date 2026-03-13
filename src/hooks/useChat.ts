@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { loadHistory, sendMessage, abortRun, subscribeToChatEvents, subscribeToAgentEvents } from '$lib/chat';
-import type { ChatMessage, ChatEvent, AgentEvent } from '$lib/types';
+import type { ChatMessage, ChatEvent, AgentEvent, ContentBlock } from '$lib/types';
+import { type PendingAttachment, toAttachment } from '$lib/attachments';
 
 export function useChat(sessionKey: string, connected: boolean) {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -130,12 +131,23 @@ export function useChat(sessionKey: string, connected: boolean) {
 		};
 	}, [sessionKey, connected, scrollToBottom, scrollToBottomIfNear]);
 
-	const handleSend = useCallback(async (message: string) => {
-		setMessages(prev => [...prev, { role: 'user' as const, content: message }]);
+	const handleSend = useCallback(async (message: string, attachments?: PendingAttachment[]) => {
+		let content: string | ContentBlock[];
+		if (attachments && attachments.length > 0) {
+			const blocks: ContentBlock[] = [];
+			if (message) blocks.push({ type: 'text', text: message });
+			for (const att of attachments) {
+				blocks.push({ type: 'image', data: att.content, mimeType: att.mimeType });
+			}
+			content = blocks;
+		} else {
+			content = message;
+		}
+		setMessages(prev => [...prev, { role: 'user' as const, content }]);
 		setError('');
 		scrollToBottom();
 		try {
-			await sendMessage(sessionKey, message);
+			await sendMessage(sessionKey, message, attachments ? { attachments: attachments.map(toAttachment) } : undefined);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Failed to send');
 		}

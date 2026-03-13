@@ -16,5 +16,8 @@ export default defineConfig({
 		alias: {
 			'$lib': path.resolve(__dirname, './src/lib')
 		}
+	},
+	optimizeDeps: {
+		include: ['@tauri-apps/plugin-dialog', '@tauri-apps/plugin-fs']
 	}
 });

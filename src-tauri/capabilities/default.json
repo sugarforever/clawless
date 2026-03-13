@@ -4,6 +4,8 @@
   "description": "Default capabilities for Clawless",
   "windows": ["main"],
   "permissions": [
-    "core:default"
+    "core:default",
+    "dialog:default",
+    "fs:default"
   ]
 }

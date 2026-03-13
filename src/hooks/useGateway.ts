@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { connect, disconnect, isConnected, setAuthToken } from '$lib/gateway';
+import { connect, disconnect, isConnected, setAuthToken, subscribe } from '$lib/gateway';
 import { listSessions, sortByUpdated } from '$lib/sessions';
 import { storage } from '$lib/storage';
-import type { SessionEntry } from '$lib/types';
+import type { SessionEntry, ChatEvent, Event } from '$lib/types';
 
 export function useGateway() {
 	const [sessions, setSessions] = useState<SessionEntry[]>([]);
@@ -38,8 +38,19 @@ export function useGateway() {
 		if (savedToken) setAuthToken(savedToken);
 		const savedUrl = storage.getGatewayUrl();
 		connectToGateway(savedUrl || undefined);
+
+		const unsub = subscribe('chat', (ev: Event) => {
+			const payload = ev.payload as unknown as ChatEvent;
+			if (payload.state === 'final' && isConnected()) {
+				listSessions().then(result => {
+					if (mountedRef.current) setSessions(sortByUpdated(result));
+				});
+			}
+		});
+
 		return () => {
 			mountedRef.current = false;
+			unsub();
 			disconnect();
 		};
 	}, [connectToGateway]);

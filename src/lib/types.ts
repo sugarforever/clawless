@@ -63,6 +63,8 @@ export interface SessionEntry {
 	channel?: string;
 	displayName?: string;
 	label?: string;
+	derivedTitle?: string;
+	lastMessagePreview?: string;
 	inputTokens?: number;
 	outputTokens?: number;
 	totalTokens?: number;
@@ -74,7 +76,38 @@ export interface SessionEntry {
 
 export type ChatRole = 'user' | 'assistant' | 'tool' | 'toolResult' | 'system';
 
-export type ContentBlock = { type: 'text'; text: string } | { type: string; [key: string]: unknown };
+export interface ImageBlock {
+	type: 'image';
+	data: string;
+	mimeType: string;
+}
+
+export interface OmittedImageBlock {
+	type: 'image';
+	mimeType: string;
+	omitted: true;
+	bytes: number;
+}
+
+export interface Attachment {
+	mimeType: string;
+	fileName: string;
+	content: string;
+}
+
+export type ContentBlock =
+	| { type: 'text'; text: string }
+	| ImageBlock
+	| OmittedImageBlock
+	| { type: string; [key: string]: unknown };
+
+export function isImageBlock(block: ContentBlock): block is ImageBlock {
+	return block.type === 'image' && 'data' in block && !('omitted' in block);
+}
+
+export function isOmittedImageBlock(block: ContentBlock): block is OmittedImageBlock {
+	return block.type === 'image' && 'omitted' in block && (block as OmittedImageBlock).omitted === true;
+}
 
 export interface ChatMessage {
 	role: ChatRole;

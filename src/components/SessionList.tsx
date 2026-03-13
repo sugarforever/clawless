@@ -39,6 +39,7 @@ export default function SessionList({ sessions }: Props) {
 						placeholder="Search sessions..."
 						value={search}
 						onChange={e => setSearch(e.target.value)}
+						autoComplete="off"
 						className="w-full rounded-md bg-sidebar-muted py-1.5 pl-8 pr-3 text-sm text-foreground placeholder-muted-foreground outline-none ring-ring focus:ring-1"
 					/>
 				</div>
@@ -72,25 +73,27 @@ export default function SessionList({ sessions }: Props) {
 												: 'text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
 										)}
 									>
-										<div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
-											<div className="flex items-center justify-between gap-2">
+										<div className="flex flex-1 flex-col gap-1 overflow-hidden">
+											<div className="flex items-baseline justify-between gap-2">
 												<span className={cn('truncate text-sm font-medium', active && 'text-foreground')}>
 													{displayLabel(session)}
 												</span>
+												<span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">
+													{formatTime(session.updatedAt)}
+												</span>
+											</div>
+											<div className="flex items-center gap-1.5 overflow-hidden">
 												{parseAgentId(session.key) && (
 													<span className="shrink-0 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
 														{parseAgentId(session.key)}
 													</span>
 												)}
-												<span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">
-													{formatTime(session.updatedAt)}
-												</span>
+												{(session.lastMessagePreview || session.lastMessage) && (
+													<p className="truncate text-xs text-muted-foreground/60">
+														{session.lastMessagePreview || session.lastMessage}
+													</p>
+												)}
 											</div>
-											{session.lastMessage && (
-												<p className="truncate text-xs text-muted-foreground">
-													{session.lastMessage}
-												</p>
-											)}
 										</div>
 									</Link>
 								);

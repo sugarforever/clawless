@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { type ChatMessage as ChatMessageType, extractTextContent } from '$lib/types';
+import { type ChatMessage as ChatMessageType, type ContentBlock, extractTextContent, isImageBlock, isOmittedImageBlock } from '$lib/types';
 import Markdown from './Markdown';
-import { ChevronIcon } from './Icons';
+import { ChevronIcon, ImageIcon } from './Icons';
 import { cn } from '$lib/utils';
 
 interface Props {
@@ -10,8 +10,8 @@ interface Props {
 }
 
 const roleConfig: Record<string, { label: string; labelClass: string }> = {
-	user: { label: 'You', labelClass: 'text-foreground/70' },
-	assistant: { label: 'OpenClaw', labelClass: 'text-foreground/70' },
+	user: { label: 'You', labelClass: 'text-sky-600 dark:text-sky-400' },
+	assistant: { label: 'OpenClaw', labelClass: 'text-[rgb(255,77,77)]' },
 	tool: { label: 'Tool', labelClass: 'text-muted-foreground' },
 	toolResult: { label: 'Tool Result', labelClass: 'text-muted-foreground' },
 	system: { label: 'System', labelClass: 'text-muted-foreground' },
@@ -69,7 +69,7 @@ export default function ChatMessage({ message, onInteractiveSubmit }: Props) {
 			<div className="mx-auto max-w-2xl">
 				<div className="flex items-center gap-2">
 					<span className={cn('text-xs font-medium', config.labelClass)}>{config.label}</span>
-					{message.usage && (
+					{message.usage?.inputTokens != null && (
 						<span className="text-[10px] tabular-nums text-muted-foreground/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
 							{message.usage.inputTokens.toLocaleString()} in / {message.usage.outputTokens.toLocaleString()} out
 						</span>
@@ -82,6 +82,34 @@ export default function ChatMessage({ message, onInteractiveSubmit }: Props) {
 						<Markdown content={text} onInteractiveSubmit={onInteractiveSubmit} />
 					)}
 				</div>
+				{Array.isArray(message.content) && (
+					<div className="mt-2 flex flex-wrap gap-2">
+						{(message.content as ContentBlock[]).map((block, i) => {
+							if (isImageBlock(block)) {
+								return (
+									<img
+										key={i}
+										src={`data:${block.mimeType};base64,${block.data}`}
+										alt=""
+										className="max-h-64 max-w-xs rounded-md border border-border/60 object-contain"
+									/>
+								);
+							}
+							if (isOmittedImageBlock(block)) {
+								return (
+									<div
+										key={i}
+										className="flex items-center gap-2 rounded-md border border-border/60 bg-muted/30 px-3 py-2 text-xs text-muted-foreground"
+									>
+										<ImageIcon className="h-4 w-4" />
+										<span>Image ({(block.bytes / 1024).toFixed(0)} KB)</span>
+									</div>
+								);
+							}
+							return null;
+						})}
+					</div>
+				)}
 			</div>
 		</div>
 	);

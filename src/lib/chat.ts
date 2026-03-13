@@ -1,5 +1,5 @@
 import { send, subscribe } from './gateway';
-import type { ChatMessage, ChatEvent, AgentEvent, Event } from './types';
+import type { ChatMessage, ChatEvent, AgentEvent, Event, Attachment } from './types';
 
 export async function loadHistory(
 	sessionKey: string,
@@ -15,7 +15,7 @@ export async function loadHistory(
 export async function sendMessage(
 	sessionKey: string,
 	message: string,
-	options: { thinking?: 'low' | 'medium' | 'high'; attachments?: unknown[] } = {}
+	options: { thinking?: 'low' | 'medium' | 'high'; attachments?: Attachment[] } = {}
 ): Promise<void> {
 	await send('chat.send', {
 		sessionKey,

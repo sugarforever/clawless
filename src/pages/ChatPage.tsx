@@ -2,11 +2,13 @@ import { useMemo } from 'react';
 import { useParams, useOutletContext } from 'react-router';
 import { useChat } from '../hooks/useChat';
 import { displayLabel } from '$lib/format';
+import { inferChannel, getChannelInfo } from '$lib/channels';
 import type { SessionEntry } from '$lib/types';
 import ChatMessage from '../components/ChatMessage';
 import ChatInput from '../components/ChatInput';
 import StreamingText from '../components/StreamingText';
 import ErrorAlert from '../components/ErrorAlert';
+import ChannelIcon from '../components/ChannelIcon';
 
 export default function ChatPage() {
 	const { key } = useParams<{ key: string }>();
@@ -14,16 +16,16 @@ export default function ChatPage() {
 	const { connected, sessions } = useOutletContext<{ connected: boolean; sessions: SessionEntry[] }>();
 	const { messages, streamingContent, isStreaming, error, hasNewMessages, messagesEndRef, scrollContainerRef, handleSend, handleAbort, handleScroll, scrollToBottom } = useChat(sessionKey, connected);
 
-	const title = useMemo(() => {
-		const session = sessions.find(s => s.key === sessionKey);
-		return session ? displayLabel(session) : sessionKey;
-	}, [sessions, sessionKey]);
+	const session = useMemo(() => sessions.find(s => s.key === sessionKey), [sessions, sessionKey]);
+	const channelInfo = useMemo(() => session ? getChannelInfo(inferChannel(session)) : null, [session]);
+	const title = session ? displayLabel(session) : sessionKey;
 
 	return (
 		<div className="flex flex-1 flex-col overflow-hidden">
 			<div className="h-[30px] shrink-0" data-tauri-drag-region="" />
-			<header className="flex h-11 items-center border-b border-border px-6" data-tauri-drag-region="">
-				<h2 className="truncate text-sm font-medium text-muted-foreground" data-tauri-drag-region="">{title}</h2>
+			<header className="flex h-10 items-center gap-2 border-b border-border px-6" data-tauri-drag-region="">
+				{channelInfo && <ChannelIcon info={channelInfo} />}
+				<span className="truncate text-xs font-medium text-muted-foreground" data-tauri-drag-region="">{title}</span>
 			</header>
 
 			{error && <ErrorAlert message={error} />}
@@ -38,7 +40,7 @@ export default function ChatPage() {
 						{isStreaming && streamingContent && (
 							<div className="px-6 py-4">
 								<div className="mx-auto max-w-2xl">
-									<span className="text-xs font-medium text-foreground/70">OpenClaw</span>
+									<span className="text-xs font-medium text-[rgb(255,77,77)]">OpenClaw</span>
 									<div className="mt-1.5 text-sm leading-relaxed text-foreground">
 										<StreamingText content={streamingContent} />
 									</div>

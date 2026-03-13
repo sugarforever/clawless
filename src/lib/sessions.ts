@@ -40,7 +40,9 @@ export function filterSessions(sessions: SessionEntry[], query: string): Session
 			s.key.toLowerCase().includes(q) ||
 			s.displayName?.toLowerCase().includes(q) ||
 			s.label?.toLowerCase().includes(q) ||
+			s.derivedTitle?.toLowerCase().includes(q) ||
 			s.channel?.toLowerCase().includes(q) ||
+			s.lastMessagePreview?.toLowerCase().includes(q) ||
 			s.lastMessage?.toLowerCase().includes(q)
 	);
 }
